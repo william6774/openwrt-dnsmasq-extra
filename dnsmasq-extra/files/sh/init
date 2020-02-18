@@ -131,7 +131,13 @@ start() {
 		echo -n "ABDLOCK, " && sed "s/^/address=\//;s/$/\/${BLOCK}/" ${DATA}/adblock >${TARGET}/misc_adblock.conf
 	}
 
-	echo -n "CUSTOM" && echo -e "all-servers\nconf-file=${DATA}/custom.conf" >${TARGET}/misc_custom.conf
+	echo -n "CUSTOM" && {
+		echo "all-servers" >${TARGET}/misc_custom.conf
+		echo "conf-file=${DATA}/custom.conf" >>${TARGET}/misc_custom.conf
+		uci_bool_by_type ${NAME} general no_resolv && {
+			echo -n "NO-RESOLV, " && echo 'no-resolv' >>${TARGET}/misc_custom.conf
+		}
+	}
 
 	sed '/\/\//d; /[0-9]\/[0-9]/d' -i ${TARGET}/*
 
